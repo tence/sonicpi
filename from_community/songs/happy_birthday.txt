@@ -1,0 +1,70 @@
+# Happy birthday !
+# 13-02-2021 ;-)
+
+
+use_bpm 120
+use_synth :piano
+use_synth_defaults amp: 1, sustain: 2, release: 2
+
+chords_progression = ( ring
+                       (chord :F, :maj),
+                       (chord :C,'7'),
+                       (chord :C,'7'),
+                       (chord :F, :maj),
+                       (chord :F, '7'),
+                       (chord :Bb, :maj),
+                       (chord :C,'7'),
+                       (chord :F, :major)
+                       )
+
+chords_durations = ( ring 4)
+
+2.times do
+  play :a5
+  sleep 0.5
+end
+
+live_loop :leftHand, delay: 1 do
+  nb = chords_durations.tick(:duration)
+  current_chord = chords_progression.tick(:notes)
+  nb.times do
+    play current_chord
+    sleep 2
+  end
+end
+
+
+with_fx :echo, phase: 1.5 do
+  live_loop :bass_speed, delay: 1 do
+    use_synth :dark_ambience
+    use_octave 1
+    nb = chords_durations.tick(:duration)*2
+    current_chord = chords_progression.tick(:notes)
+    nb.times do
+      play current_chord[5], amp: 0.55, attack: 0.2
+      sleep 2.5
+    end
+  end
+end
+
+with_fx :reverb, mix: 0.25, room: 0.8 do
+  live_loop :melody, delay:1 do
+    
+    play_pattern_timed [ :d5, :c5, :f5, :e5, :c5, :c5,
+                         :d5, :c5, :g5, :f5, :c5, :c5],[2, 1, 1]
+    
+    play_pattern_timed [ :c6, :a5, :f5, :e5, :d5, :Bb5, :Bb5, :a5, :f5, :g5, :f5, :c5, :c5 ],
+      [2, 1, 1,  2, 1, 0.5, 0.5, 2, 1, 1, 3, 0.5, 0.5]
+  end
+end
+
+with_fx :echo, phase: 2 do
+  live_loop :bass, delay: 1 do
+    use_synth :piano
+    use_synth_defaults amp: 0.8, sustain: 4
+    use_octave 0
+    current_chord = chords_progression.tick(:notes)
+    play current_chord[0]
+    sleep chords_durations.tick(:duration)
+  end
+end
