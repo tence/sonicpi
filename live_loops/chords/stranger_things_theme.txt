@@ -1,0 +1,8 @@
+use_bpm 85
+
+arp = (ring :c3, :e3, :g3, :b3, :c4, :b3, :g3, :e3)
+live_loop :arp, delay: 4 do
+  use_synth :supersaw
+  play arp.tick, cutoff: (line 40, 120, steps: 100).reflect.look, sustain: 0.05
+  sleep 0.25
+end
